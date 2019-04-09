@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Name:
+# Name: Charlotte
 # Student number:
 """
 This script visualizes data obtained from a .csv file
