@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--  Name: Charlotte Marks
+      Student number: 10506942
+      Purpose: HTML file to show d3 bar chart in browser
+      References:
+        code for changing colors while hovering over bars: http://bl.ocks.org/phil-pedruco/9032348
+        code for showing data while hovering over bars: https://bl.ocks.org/alandunning/274bf248fd0f362d64674920e85c1eb7
+-->
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <style type="text/css">
+
+  			.axis path,
+  			.axis line {
+  				fill: none;
+  				stroke: black;
+  				shape-rendering: crispEdges;
+  			}
+
+  			.axis text {
+  				font-family: sans-serif;
+  				font-size: 11px;
+  			}
+
+        .toolTip {
+          position: absolute;
+          display: none;
+          min-width: 80px;
+          height: auto;
+          background: none repeat scroll 0 0 #ffffff;
+          border: 1px solid #6F257F;
+          padding: 14px;
+          text-align: center;
+        }
+
+  		</style>
+  </head>
+  <body>
+    <script type="text/javascript">
+            // setting a heading title
+            d3.select("head")
+            .append("title")
+            .text("Global Education");
+
+            // setting a title for chart in body
+            d3.select("body")
+            .append("h1")
+            .text("Bar chart global education for women");
+
+            // adding name and student number
+            d3.select("body")
+            .append("b")
+            .text("Name: Charlotte Marks Studentnumber: 10506942");
+
+            // adding color
+            d3.select("b")
+            .style("color", "grey");
+
+            // adding purpose of file
+            d3.select("body")
+            .append("p")
+            .text("This page will show a bar chart made with D3");
+
+            // adding information about dataset
+            d3.select("body")
+            .append("p")
+            .text("The dataset contains the mean years of education for females in 11 regions of the world and the world total in 2015");
+
+
+            // loading in the data
+            var fileName = "globalEducation12.json";
+
+            var txtFile = new XMLHttpRequest();
+            txtFile.onreadystatechange = function() {
+              if (txtFile.readyState === 4 && txtFile.status == 200) {
+                // storing the data in a variable
+                var data = JSON.parse(txtFile.responseText);
+                console.log(data);
+                console.log(data.length);
+
+                draw_d3_barchart(data);
+
+              }
+            }
+            txtFile.open("GET", fileName);
+            txtFile.send();
+
+            function draw_d3_barchart(input_data) {
+              // width and height
+              var svgWidth = 1750;
+              var svgHeight = 250;
+              var svgHeightAxis = 180;
+              var svgWidthAxis = 780;
+
+              // create SVG element
+              var svg = d3.select("body")
+              .append("svg")
+              .attr("width", svgWidth)
+              .attr("height", svgHeight);
+
+
+              // generate rects and add them to svg with scaling() function
+              var xScale = d3.scaleBand()
+                     .domain(input_data.map(function (d) { return d["Country"]; }))
+                     .range([30, svgWidth])
+                     .padding(0.2);
+
+              var yScale = d3.scaleLinear()
+                      .domain([0, d3.max(input_data, function(d) { return d["Mean Years of Education (Female)"]; })])
+                      .range([svgHeightAxis, 30]);
+
+              var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
+
+              // generate rects and add them to svg
+              svg.selectAll("rect")
+                .data(input_data)
+                .enter()
+                .append("rect")
+                .attr("x", function(d) {
+                  return xScale(d["Country"]);
+                })
+                .attr("y", function(d) {
+                  return yScale(d["Mean Years of Education (Female)"]);
+                })
+                .attr("width", function(d){
+                  return xScale.bandwidth();
+                })
+                .attr("height", function(d) {
+                  return svgHeightAxis - yScale(d["Mean Years of Education (Female)"]);
+                })
+                // coloring the rects
+                .attr("fill", "teal")
+                // function for showing data and changing colors when hovering over bars
+                .on("mousemove", function(d){
+                    d3.select(this)
+            	      .attr("fill", "red");
+                    tooltip
+                      .style("left", d3.event.pageX - 50 + "px")
+                      .style("top", d3.event.pageY - 70 + "px")
+                      .style("display", "inline-block")
+                      .html((d["Country"]) + "<br>" + (d["Mean Years of Education (Female)"]) + " years");
+                })
+                // function to set the visualization back to normal when hovering away from from the bar
+    		         .on("mouseout", function(d){
+                   tooltip.style("display", "none")
+                   d3.select(this).attr("fill", "teal");
+                   });
+
+                // add the x Axis
+                svg.append("g")
+                  .attr("class", "axis")
+                  .attr("transform", "translate(0," + svgHeightAxis + ")")
+                  .call(d3.axisBottom(xScale));
+
+                // add the y Axis
+                svg.append("g")
+                  .attr("class", "axis")
+                  .attr("transform", "translate(" + 30 + ",0)")
+                  .call(d3.axisLeft(yScale));
+
+                // text label for the x axis
+                svg.append("text")
+                  .attr("transform", "translate(" + (svgWidth/2) + " ," + (svgHeight-(100/3) + ")"))
+                  .style("text-anchor", "middle")
+                  .text("Country");
+
+                // text label for y axis
+                svg.append("text")
+                  .attr("text-anchor", "middle")
+                  .attr("transform", "translate("+ (10) +","+(svgHeight/2)+")rotate(-90)")
+                  .text("Years");
+
+                // title chart
+                svg.append("text")
+                  .attr("transform", "translate(" + (svgWidth/2) + " ," + (svgHeight-(230)) + ")")
+                  .attr("text-anchor", "middle")
+                  .style("font-size", "16px")
+                  .text("Years of Education for Women Globally in 2015");
+
+            }
+
+    </script>
+  </body>
+</html>
