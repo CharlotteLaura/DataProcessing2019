@@ -138,6 +138,8 @@ function draw_d3_scatterplot(input_data, year){
                     .domain([0, d3.max(input_data, function(d) { return d["teenArea"]})])
                     .range([0, plotWidth - margin.left - margin.right]);
 
+  var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
   // oloring for different levels of GDP
   var coloring = [{color:"#edf8b1"}, {color:"#7fcdbb"}, {color:"#2c7fb8"}];
 
@@ -165,7 +167,31 @@ function draw_d3_scatterplot(input_data, year){
                           else {
                             return coloring[2].color;
                           }
-                        });
+                        })
+                .on("mousemove", function(d){
+                    d3.select(this)
+                    	.attr("fill", "red");
+                      tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html((d["Country"]));
+                  })
+                  // function to set the visualization back to normal when hovering away from from the bar
+            		  .on("mouseout", function(d){
+                      tooltip.style("display", "none")
+                      d3.select(this).attr("fill", function(d){
+                                  if (d["GDP"] < 30000) {
+                                    return coloring[0].color;
+                                  }
+                                  else if (d["GDP"] < 45000) {
+                                    return coloring[1].color;
+                                  }
+                                  else {
+                                    return coloring[2].color;
+                                  }
+                                });
+                  });
 
     // drawing x axis
     svgPlot.append("g")
@@ -214,7 +240,7 @@ function draw_d3_scatterplot(input_data, year){
         .attr("height", 90)
         .attr("width", 180)
         .style("stroke", "black")
-        .style("stroke-width", 1)
+        .style("stroke-width", 0.5)
         .style("fill", "None");
 
 };
