@@ -3,6 +3,9 @@
     Student number: 10506942
     Purpose of file: JavaScript code to draw a d3 scatterplot
     Datasource : OECD
+    References:
+      code for changing colors while hovering over bars: http://bl.ocks.org/phil-pedruco/9032348
+      code for showing data while hovering over bars: https://bl.ocks.org/alandunning/274bf248fd0f362d64674920e85c1eb7
 */
 
 window.onload = function() {
