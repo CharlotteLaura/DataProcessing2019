@@ -1,0 +1,16 @@
+/*
+Name: Charlotte Marks
+Student number: 10506942
+Purpose of the file: styling of the page representing the d3 linked Views
+*/
+
+.toolTip {
+          position: absolute;
+          min-width: 80px;
+          height: 20px;
+          background: white;
+          border: 1px solid #6F257F;
+          padding: 14px;
+          font-size: 15px;
+          text-align: center;
+        }
